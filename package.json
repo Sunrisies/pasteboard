@@ -10,20 +10,24 @@
     "tauri": "tauri"
   },
   "dependencies": {
+    "@tanstack/react-router": "^1.131.5",
+    "@tanstack/react-router-devtools": "^1.131.5",
     "@tauri-apps/api": "^2",
     "@tauri-apps/plugin-autostart": "~2",
     "@tauri-apps/plugin-clipboard-manager": "~2",
     "@tauri-apps/plugin-fs": "~2",
     "@tauri-apps/plugin-opener": "^2",
     "react": "^19.1.0",
-    "react-dom": "^19.1.0"
+    "react-dom": "^19.1.0",
+    "tauri-plugin-clipboard-api": "^2.1.11"
   },
   "devDependencies": {
+    "@tanstack/router-plugin": "^1.131.5",
+    "@tauri-apps/cli": "^2",
     "@types/react": "^19.1.8",
     "@types/react-dom": "^19.1.6",
     "@vitejs/plugin-react": "^4.6.0",
     "typescript": "~5.8.3",
-    "vite": "^7.0.4",
-    "@tauri-apps/cli": "^2"
+    "vite": "^7.0.4"
   }
 }

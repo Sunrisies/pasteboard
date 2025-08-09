@@ -5,6 +5,8 @@ import { invoke } from "@tauri-apps/api/core";
 import "./App.css";
 import { enable, isEnabled, disable } from '@tauri-apps/plugin-autostart';
 import { writeText, readText, readImage } from '@tauri-apps/plugin-clipboard-manager';
+import { onImageUpdate, startListening, readImageBase64 } from 'tauri-plugin-clipboard-api'
+import { Link } from '@tanstack/react-router'
 function App() {
   const [greetMsg, setGreetMsg] = useState("");
   const [image, setImage] = useState("")
@@ -26,12 +28,23 @@ function App() {
     setGreetMsg(await invoke("greet", { name }));
   }
   const copyToClipboard = async () => {
-    const image = await readImage()
-    const blob = new Blob([await image.rgba()], { type: 'image' })
-    const url = URL.createObjectURL(blob)
-    console.log(url)
+    // const image = await readImage()
+    // const blob = new Blob([await image.rgba()], { type: 'image' })
+    // const url = URL.createObjectURL(blob)
+    // console.log(url)
     // const ss = url.slice(5)
-    setImage(() => url)
+    const base64Img = await readImageBase64()
+    console.log(base64Img, '==1=1==1')
+    // .then((base64Img) => {
+    //   console.log(base64Img, '==1=1==1')
+    const image = `data:image/png;base64, ${base64Img}`
+    setImage(image)
+
+    //   // upload(`data:image/png;base64, ${base64Img}`)
+    // })
+    // .catch((err) => {
+    //   alert(err)
+    // })
   }
 
   return (
@@ -56,7 +69,7 @@ function App() {
         复制图片到剪贴板
       </button>
       <p>Click on the Tauri, Vite, and React logos to learn more.</p>
-
+      <Link to="/about">About</Link>
       <form
         className="row"
         onSubmit={(e) => {
