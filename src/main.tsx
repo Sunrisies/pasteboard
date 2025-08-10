@@ -1,17 +1,12 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-// import App from "./App";
-import App from "./pages/__root"
 import {
-  Outlet,
   RouterProvider,
-  Link,
-  createRouter,
-  createRoute,
-  createRootRoute,
-} from '@tanstack/react-router'
+  createRouter
+} from '@tanstack/react-router';
+import "./styles/global.css";
 
-import { routeTree } from './routeTree.gen'
+import { routeTree } from './routeTree.gen';
 
 const router = createRouter({ routeTree })
 

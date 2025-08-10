@@ -5,5 +5,5 @@ export const Route = createFileRoute('/about')({
 })
 
 function About() {
-    return <div className="p-2">Hello from About!</div>
+    return <div className="p-2 border border-red-300 rounded-md">Hello from About!</div>
 }
