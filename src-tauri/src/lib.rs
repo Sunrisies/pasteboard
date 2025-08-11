@@ -1,4 +1,6 @@
 // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
+use tauri::Emitter;
+
 #[tauri::command]
 fn greet(name: &str) -> String {
     format!("Hello, {}! You've been greeted from Rust!", name)
@@ -7,6 +9,7 @@ fn greet(name: &str) -> String {
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
+        // .plugin(tauri_plugin_global_shortcut::Builder::new().build())
         .plugin(tauri_plugin_fs::init())
         .plugin(tauri_plugin_clipboard::init()) // add this line
         .plugin(tauri_plugin_clipboard_manager::init())
@@ -16,6 +19,43 @@ pub fn run() {
                 tauri_plugin_autostart::MacosLauncher::LaunchAgent,
                 Some(vec!["--flag1", "--flag2"]), /* arbitrary number of args to pass to your app */
             ));
+            {
+                use tauri_plugin_global_shortcut::{
+                    Code, GlobalShortcutExt, Modifiers, Shortcut, ShortcutState,
+                };
+                print!("223233223");
+                let ctrl_n_shortcut = Shortcut::new(Some(Modifiers::ALT), Code::KeyT);
+                app.handle().plugin(
+                    tauri_plugin_global_shortcut::Builder::new()
+                        .with_handler(move |app, shortcut, event| {
+                            println!("{:?}", shortcut);
+                            // if shortcut == &ctrl_n_shortcut {
+                            //     match event.state() {
+                            //         ShortcutState::Pressed => {
+                            //             println!("ALT - T Pressed!");
+                            //         }
+                            //         ShortcutState::Released => {
+                            //             println!("ALT - T Released!");
+                            //         }
+                            //     }
+                            // }
+                            if event.state == ShortcutState::Pressed {
+                                if shortcut.matches(Modifiers::ALT, Code::KeyT) {
+                                    let _ = app.emit("add-images", "alt + t triggered");
+                                }
+                                if shortcut.matches(Modifiers::ALT, Code::KeyR) {
+                                    let _ = app.emit("add-go-images", "ALT+1 triggered");
+                                }
+                                // if shortcut.matches(Modifiers::ALT, Code::Space) {
+                                //     let _ = app.emit("shortcut-event", "Alt+Space triggered");
+                                // }
+                            }
+                        })
+                        .build(),
+                )?;
+
+                app.global_shortcut().register(ctrl_n_shortcut)?;
+            }
 
             Ok(())
         })

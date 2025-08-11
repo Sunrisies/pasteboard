@@ -16,6 +16,10 @@
     "clipboard-manager:allow-clear",
     "clipboard-manager:allow-read-image",
     "clipboard:allow-read-image-base64",
-    "clipboard:read-all"
+    "clipboard:read-all",
+    "global-shortcut:default",
+    "global-shortcut:allow-is-registered",
+    "global-shortcut:allow-register",
+    "global-shortcut:allow-unregister"
   ]
 }
