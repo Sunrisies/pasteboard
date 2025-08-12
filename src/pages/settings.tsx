@@ -3,7 +3,7 @@ import { useEffect, useState } from "react"
 import { createFileRoute } from '@tanstack/react-router'
 import { register, isRegistered, unregister } from '@tauri-apps/plugin-global-shortcut';
 import { onImageUpdate, startListening, readImageBase64 } from 'tauri-plugin-clipboard-api'
-
+import { upload } from '@tauri-apps/plugin-upload';
 import { listen } from '@tauri-apps/api/event';
 export const Route = createFileRoute('/settings')({
     component: RouteComponent,
@@ -12,16 +12,16 @@ export const Route = createFileRoute('/settings')({
 function RouteComponent() {
     const [image, setImage] = useState("")
 
-    const init = async () => {
-        const as = await isRegistered("ALT + T")
-        // const asa = await unregister("ALT + T")
-        console.log(as, '1=1=1=')
-        await register('ALT + T', () => {
-            console.log('Shortcut triggered');
-        });
-    }
+    // const init = async () => {
+    //     const as = await isRegistered("ALT + T")
+    //     // const asa = await unregister("ALT + T")
+    //     console.log(as, '1=1=1=')
+    //     await register('ALT + T', () => {
+    //         console.log('Shortcut triggered');
+    //     });
+    // }
     useEffect(() => {
-        init()
+        // init()
         ls()
     })
     const ls = () => {
@@ -32,6 +32,33 @@ function RouteComponent() {
                 console.log(base64Img, '==1=1==1')
                 const image = `data:image/png;base64, ${base64Img}`
                 setImage(image)
+                var myHeaders = new Headers();
+                myHeaders.append("Authorization", "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjYsInVzZXJuYW1lIjoi6JaE5by6Iiwicm9sZSI6InVzZXIiLCJwZXJtaXNzaW9ucyI6NTIzLCJpYXQiOjE3NTM5MjkxMTksImV4cCI6MTc1MzkzMjcxOX0.U_nRBDEI8K3Tyo1GpgicTcrdHg2P980dZJMKkIAlv9g");
+                myHeaders.append("User-Agent", "Apifox/1.0.0 (https://apifox.com)");
+                myHeaders.append("Accept", "*/*");
+                myHeaders.append("Host", "api.chaoyang1024.top");
+                myHeaders.append("Connection", "keep-alive");
+
+                var formdata = new FormData();
+
+                var requestOptions = {
+                    method: 'POST',
+                    headers: myHeaders,
+                    body: formdata,
+                    redirect: 'follow'
+                };
+
+                fetch("https://api.chaoyang1024.top/api/storage", requestOptions)
+                    .then(response => response.text())
+                    .then(result => console.log(result))
+                    .catch(error => console.log('error', error));
+                // upload(
+                //     'https://example.com/file-upload',
+                //     'D:\project\project\tauri\pasteboard\src\pages\about.tsx',
+                //     ({ progress, total }) =>
+                //         console.log(`Uploaded ${progress} of ${total} bytes`), // a callback that will be called with the upload progress
+                //     { 'Content-Type': 'text/plain' } // optional headers to send with the request
+                // );
             } catch (e) {
                 alert("当前剪切板里面没有图片")
             }
