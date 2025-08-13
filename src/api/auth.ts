@@ -1,6 +1,6 @@
 import { useQuery, useMutation } from '@tanstack/react-query'
 import { request } from '@/utils/request'
-import { writeTextFile, BaseDirectory, exists, create } from '@tauri-apps/plugin-fs';
+import { writeTextFile, BaseDirectory, exists, create, readTextFile } from '@tauri-apps/plugin-fs';
 //添加写入文件的权限
 const upLoad = () => {
 
@@ -21,7 +21,21 @@ export const useUploadImageApi = () => {
             });
             console.log(Exists, '算法存在')
             if (Exists) {
-                const contents = JSON.stringify({ notifications: true });
+                const configToml = await readTextFile('config.json', {
+                    baseDir: BaseDirectory.Config,
+                })
+                console.log(configToml, '读取')
+                const config = JSON.parse(configToml)
+                console.log(config, '配置')
+                const image = {
+                    name: "image.png",
+                    path: Math.random().toString(36).substr(2, 10) + ".png",
+                }
+                config.images = [
+                    ...config.images,
+                    image
+                ]
+                const contents = JSON.stringify(config);
                 const data = await writeTextFile('config.json', contents, {
                     baseDir: BaseDirectory.Config,
                 });

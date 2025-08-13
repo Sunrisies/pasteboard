@@ -1,6 +1,11 @@
 // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
+use clipboard_rs::{
+    common::RustImage, Clipboard as ClipboardRS, ClipboardContent,
+    ClipboardContext as ClipboardRsContext, ClipboardHandler, ClipboardWatcher,
+    ClipboardWatcherContext, ContentFormat, RustImageData, WatcherShutdown,
+};
+use std::io::Write;
 use tauri::Emitter;
-
 #[tauri::command]
 fn greet(name: &str) -> String {
     format!("Hello, {}! You've been greeted from Rust!", name)
@@ -32,6 +37,7 @@ pub fn run() {
                             println!("{:?}", shortcut);
                             if event.state == ShortcutState::Pressed {
                                 if shortcut.matches(Modifiers::ALT, Code::KeyT) {
+                                    let _ = read_image_binary();
                                     let _ = app.emit("add-images", ShortcutState::Pressed);
                                 }
                                 if shortcut.matches(Modifiers::ALT, Code::KeyR) {
@@ -51,4 +57,21 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![greet])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
+}
+
+pub fn read_image_binary() -> Result<Vec<u8>, String> {
+    let ctx = ClipboardRsContext::new().unwrap();
+    let types = ctx.available_formats().unwrap();
+    let image = ctx.get_image().map_err(|err| err.to_string())?;
+    let bytes = image
+        .to_png()
+        .map_err(|err| err.to_string())?
+        .get_bytes()
+        .to_vec();
+    // 写入到当前目录下
+    let mut file = std::fs::File::create("image.png").unwrap();
+    file.write_all(&bytes).unwrap();
+    // let bytes = util::image_data_to_bytes(&image);
+    println!("bytes: {:?}, types: {:?}", bytes, bytes.len());
+    Ok(bytes)
 }
