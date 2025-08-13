@@ -21,6 +21,35 @@
     "global-shortcut:allow-is-registered",
     "global-shortcut:allow-register",
     "global-shortcut:allow-unregister",
-    "upload:default"
+    "upload:default",
+    "fs:default",
+    "fs:allow-config-read-recursive",
+    "fs:allow-config-write-recursive",
+    "fs:allow-config-read",
+    "fs:allow-config-write",
+    "fs:allow-config-meta-recursive",
+    "fs:allow-config-meta",
+    "fs:scope-config-recursive",
+    "fs:scope-config",
+    "fs:scope-config-index",
+    {
+      "identifier": "fs:allow-exists",
+      "allow": [
+        {
+          "path": "$APPDATA/*"
+        }
+      ]
+    },
+    {
+      "identifier": "fs:scope",
+      "allow": [
+        {
+          "path": "$CONFIG"
+        },
+        {
+          "path": "$CONFIG/**/*"
+        }
+      ]
+    }
   ]
 }

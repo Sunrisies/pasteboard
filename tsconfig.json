@@ -21,6 +21,8 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
+    "experimentalDecorators": true, // 启用装饰器
+    "emitDecoratorMetadata": true, // 给装饰器加上元数据
     "baseUrl": ".",
     "paths": {
       "@/*": [

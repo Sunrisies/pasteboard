@@ -30,26 +30,13 @@ pub fn run() {
                     tauri_plugin_global_shortcut::Builder::new()
                         .with_handler(move |app, shortcut, event| {
                             println!("{:?}", shortcut);
-                            // if shortcut == &ctrl_n_shortcut {
-                            //     match event.state() {
-                            //         ShortcutState::Pressed => {
-                            //             println!("ALT - T Pressed!");
-                            //         }
-                            //         ShortcutState::Released => {
-                            //             println!("ALT - T Released!");
-                            //         }
-                            //     }
-                            // }
                             if event.state == ShortcutState::Pressed {
                                 if shortcut.matches(Modifiers::ALT, Code::KeyT) {
-                                    let _ = app.emit("add-images", "alt + t triggered");
+                                    let _ = app.emit("add-images", ShortcutState::Pressed);
                                 }
                                 if shortcut.matches(Modifiers::ALT, Code::KeyR) {
                                     let _ = app.emit("add-go-images", "ALT+1 triggered");
                                 }
-                                // if shortcut.matches(Modifiers::ALT, Code::Space) {
-                                //     let _ = app.emit("shortcut-event", "Alt+Space triggered");
-                                // }
                             }
                         })
                         .build(),
