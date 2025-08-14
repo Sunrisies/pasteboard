@@ -20,7 +20,7 @@ const items = [
   },
   {
     title: "记录",
-    url: "#",
+    url: "/images",
     icon: Search,
   },
   {

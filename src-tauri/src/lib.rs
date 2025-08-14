@@ -1,4 +1,6 @@
 // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
+// use super::util::request;
+// use crate::utils::request;
 use clipboard_rs::{
     common::RustImage, Clipboard as ClipboardRS, ClipboardContent,
     ClipboardContext as ClipboardRsContext, ClipboardHandler, ClipboardWatcher,
@@ -6,6 +8,7 @@ use clipboard_rs::{
 };
 use std::io::Write;
 use tauri::Emitter;
+use tauri_plugin_http::reqwest;
 #[tauri::command]
 fn greet(name: &str) -> String {
     format!("Hello, {}! You've been greeted from Rust!", name)
@@ -14,6 +17,7 @@ fn greet(name: &str) -> String {
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
+        .plugin(tauri_plugin_http::init())
         .plugin(tauri_plugin_upload::init())
         // .plugin(tauri_plugin_global_shortcut::Builder::new().build())
         .plugin(tauri_plugin_fs::init())
@@ -37,7 +41,7 @@ pub fn run() {
                             println!("{:?}", shortcut);
                             if event.state == ShortcutState::Pressed {
                                 if shortcut.matches(Modifiers::ALT, Code::KeyT) {
-                                    let _ = read_image_binary();
+                                    // let _ = read_image_binary();
                                     let _ = app.emit("add-images", ShortcutState::Pressed);
                                 }
                                 if shortcut.matches(Modifiers::ALT, Code::KeyR) {
@@ -59,7 +63,10 @@ pub fn run() {
         .expect("error while running tauri application");
 }
 
-pub fn read_image_binary() -> Result<Vec<u8>, String> {
+pub async fn read_image_binary() -> Result<Vec<u8>, String> {
+    // let res = reqwest::get("http://my.api.host/data.json").await;
+    // println!("{:?}", res.status()?); // e.g. 200
+    // println!("{:?}", res.text().await); // e.g Ok("{ Content }")
     let ctx = ClipboardRsContext::new().unwrap();
     let types = ctx.available_formats().unwrap();
     let image = ctx.get_image().map_err(|err| err.to_string())?;
