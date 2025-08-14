@@ -16,12 +16,13 @@ import { writeTextFile, BaseDirectory, exists, create, readTextFile, mkdir } fro
 
 
 import { listen } from '@tauri-apps/api/event';
-import { useUploadImageApi } from '@/api/auth'
+import { uploadImageApi, useLoginApi, useUploadImageApi } from '@/api/auth'
 import { emitter } from '@/utils/mitt'
 import { onImageUpdate, startListening, readImageBase64, readImageBinary } from 'tauri-plugin-clipboard-api'
 
 import { fetch } from '@tauri-apps/plugin-http';
 import { configs, initConfig } from './utils/config';
+import { loadStore } from './store';
 
 const router = createRouter({ routeTree })
 
@@ -43,22 +44,14 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
 
 listen("add-images", async (event) => {
   console.log(event, '1==1=1111=1121==')
+  const store = (await loadStore())
 
   try {
-    // const response1 = await fetch("https://api.chaoyang1024.top/api/auth/login", {
-    //   method: "POST",
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //   },
-    //   body: JSON.stringify({
-    //     "user_name": "chaoyang",
-    //     "pass_word": "123456",
-    //     "method": "password"
-    //   }),
-    // })
-    // const token = await response1.json().then(res => res.data.access_token)
-    // console.log(token, 'token')
-    // const ss = await readImageBinary('Blob') as Blob
+    const token = await store.get('token')
+    !token && await useLoginApi()
+    console.log(token, 'token')
+
+    const ss = await readImageBinary('Blob') as Blob
     // const formData = new FormData()
     // formData.append('file', new Blob([ss], { type: 'image/png' }), 'image.png');
     // const response = await fetch('https://api.chaoyang1024.top/api/storage', {
@@ -79,62 +72,15 @@ listen("add-images", async (event) => {
       "storage_provider": "qiniu",
       "id": 50
     }
-    console.log(data, 'data')
-    await configs(data)
+    if (token) {
 
-    // }
-    // console.log(await response.json(), '1=1=1=1=1='); // e.g. "OK"
+      const data = await uploadImageApi(ss, token!)
+      await configs(data)
+      emitter.emit('add-image', data)
+    }
   } catch (e) {
     console.error(e, '-----')
     // alert("当前剪切板里面没有图片")
   }
 })
-// const configs = async (image: any) => {
-//   const home = BaseDirectory.Home;
-//   const path = '.pasteboard/config.json'
-//   const a = '.pasteboard'
-//   const Exists = await exists(path, {
-//     baseDir: home,
-//   });
-//   console.log(Exists, '算法存在')
-
-//   if (Exists) {
-//     const configToml = await readTextFile(path, {
-//       baseDir: home,
-//     })
-//     console.log(configToml, '读取')
-//     const config = JSON.parse(configToml)
-//     console.log(config, '配置')
-//     const newImage = { ...image, id: config.images.length + 1 }
-//     config.images = [
-//       ...config.images,
-//       newImage
-//     ]
-//     const contents = JSON.stringify(config);
-//     const data = await writeTextFile(path, contents, {
-//       baseDir: home,
-//     });
-//     console.log(data, '写入')
-//   } else {
-//     const tokenExists = await exists(a, {
-//       baseDir: home,
-//     });
-//     console.log(tokenExists, 'tokenExists')
-//     if (!tokenExists) {
-//       await mkdir(a, {
-//         baseDir: home,
-//       });
-
-//     }
-//     const file = await create(path, { baseDir: home })
-//     console.log(file, '创建')
-//     const contents = JSON.stringify({ images: [{ ...image, id: 1 }] });
-//     await file.write(new TextEncoder().encode(contents));
-//     await file.close();
-
-//     // const data = await file.writewriteTextFile(path, contents, {
-//     //   baseDir: home,
-//     // });
-//     console.log(file, '写入')
-//   }
-// }
+// const

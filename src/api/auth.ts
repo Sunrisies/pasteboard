@@ -1,10 +1,9 @@
 import { useQuery, useMutation } from '@tanstack/react-query'
 import { request } from '@/utils/request'
 import { writeTextFile, BaseDirectory, exists, create, readTextFile } from '@tauri-apps/plugin-fs';
+import { loadStore } from '@/store/index'
 //添加写入文件的权限
-const upLoad = () => {
 
-}
 export const useUploadImageApi = () => {
     return useMutation({
         mutationFn: async (params: any) => {
@@ -59,4 +58,45 @@ export const useUploadImageApi = () => {
             // }
         },
     });
+}
+export const useLoginApi = async () => {
+    const store = (await loadStore())
+    // console.log(await store.get('token'), '=====')
+    const response = await fetch("https://api.chaoyang1024.top/api/auth/login", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            "user_name": "chaoyang",
+            "pass_word": "123456",
+            "method": "password"
+        }),
+    })
+    const token = await response.json().then(res => res.data.access_token)
+    await store.set('token', token)
+    return token
+}
+
+export const uploadImageApi = async (file: Blob, token: string) => {
+    return await new Promise(async (resolve, reject) => {
+        const formData = new FormData()
+        formData.append('file', new Blob([file], { type: 'image/png' }), 'image.png');
+        const response = await fetch('https://api.chaoyang1024.top/api/storage', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                Authorization: token ? `Bearer ${token}` : ''
+            }
+        });
+        const { code, message, data } = await response.json()
+        console.log(code, 'dta', data)
+        if (code === 200) {
+            resolve(data)
+        } else if (code === 401) {
+            const token = await useLoginApi()
+            await uploadImageApi(file, token)
+        }
+        reject('失败')
+    })
 }
