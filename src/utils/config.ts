@@ -13,7 +13,7 @@ const loadConfig = async (baseDir: BaseDirectory) => {
     return JSON.parse(configToml);
 };
 
-const saveConfig = async (baseDir: BaseDirectory, config: any) => {
+export const saveConfig = async (config: any, baseDir: BaseDirectory = BaseDirectory.Home) => {
     const contents = JSON.stringify(config);
     await writeTextFile(CONFIG_PATH, contents, { baseDir });
 };
@@ -31,7 +31,14 @@ const createInitialConfig = async (baseDir: BaseDirectory) => {
     const existsDir = await exists(CONFIG_DIR, { baseDir });
     if (!existsDir) await mkdir(CONFIG_DIR, { baseDir });
     const file = await create(CONFIG_PATH, { baseDir });
-    const contents = JSON.stringify({ images: [] });
+    const contents = JSON.stringify({
+        images: [], config: {
+            setting: {
+                uploadApi: 'https://api.chaoyang1024.top/api/storage',
+                path: baseDir
+            }
+        }
+    });
     await file.write(new TextEncoder().encode(contents));
     await file.close();
 };

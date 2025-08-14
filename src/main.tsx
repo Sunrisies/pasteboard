@@ -68,8 +68,7 @@ listen("add-images", async (event) => {
     }
 
     if (permissionGranted) {
-      sendNotification({ title: 'pasteboard', body: '当前剪切板里面没有图片' });
+      sendNotification({ title: 'pasteboard', body: '当前剪切板里面没有图片', icon: "https://i.pravatar.cc/300" });
     }
   }
 })
-// const
