@@ -8,7 +8,7 @@ import {
 } from '@tanstack/react-router';
 import React from "react";
 import ReactDOM from "react-dom/client";
-
+import store from './store'
 import "./styles/global.css";
 
 import { routeTree } from './routeTree.gen';
@@ -25,6 +25,7 @@ import { readImageBinary } from 'tauri-plugin-clipboard-api'
 
 import { configs, initConfig } from './utils/config';
 import { loadStore } from './store';
+import { Provider } from 'react-redux'
 
 const router = createRouter({ routeTree })
 
@@ -36,11 +37,13 @@ declare module '@tanstack/react-router' {
 initConfig()
 const queryClient = new QueryClient()
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
-  <React.StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <RouterProvider router={router} />
-    </QueryClientProvider>
-  </React.StrictMode>,
+  <Provider store={store}>
+    <React.StrictMode>
+      <QueryClientProvider client={queryClient}>
+        <RouterProvider router={router} />
+      </QueryClientProvider>
+    </React.StrictMode>
+  </Provider>,
 );
 
 

@@ -1,5 +1,6 @@
 import { Calendar, Home, Inbox, Search, Settings } from "lucide-react"
-
+import { useSelector, useDispatch } from 'react-redux'
+import { decrement, setActiveIndex } from '@/store/config'
 import {
   Sidebar,
   SidebarContent,
@@ -10,6 +11,8 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
+import { useNavigate } from "@tanstack/react-router"
+import { use, useState } from "react"
 
 // Menu items.
 const items = [
@@ -40,21 +43,33 @@ const items = [
 ]
 
 export function AppSidebar({ config }: { config: any }) {
+  const navigate = useNavigate()
+  // const [activeIndex, setActiveIndex] = useState(config.sidebar.index || 0)
+  const activeIndex = useSelector((state) => state.counter.value)
+  const dispatch = useDispatch()
+  const handleGotoPage = (e: any) => {
+    navigate({ to: e.url })
+    dispatch(setActiveIndex(e.index))
+  }
   return (
     <Sidebar>
       <SidebarContent>
         <SidebarGroup>
-          {JSON.stringify(config)}
-          <SidebarGroupLabel>工具</SidebarGroupLabel>
+          <SidebarGroupLabel>工具{activeIndex}</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {items.map((item) => (
+              {config.sidebar && items.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild className={`group relative flex items-center px-3 py-2 text-sm font-medium ${config.sidebar.index === item.index ? 'text-gray-900 bg-gray-200 hover:bg-gray-100' : 'text-gray-600 hover:bg-gray-100'}`}>
-                    <a href={item.url}>
+                  <SidebarMenuButton asChild
+                    className={`group relative flex items-center px-3 py-2 text-sm font-medium ${activeIndex === item.index ? 'text-gray-900 bg-gray-200 hover:bg-gray-100' : 'text-gray-600 hover:bg-gray-100'}`}
+                  >
+                    {/* <Link>
+                      
+                    </Link> */}
+                    <div onClick={() => handleGotoPage(item)}>
                       <item.icon />
                       <span>{item.title}</span>
-                    </a>
+                    </div>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}

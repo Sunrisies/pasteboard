@@ -7,6 +7,7 @@ import { getConfig, saveConfig } from "@/utils/config"
 // import { emitter } from '@/utils/mitt'
 export const Layout = ({ children }: { children: React.ReactNode }) => {
     const [config, setConfig] = useState<any>({})
+    const [isEnabled, setIsEnabled] = useState(false)
     useEffect(() => {
         getConfig().then(config => {
             console.log(config, '2112211')
@@ -15,13 +16,20 @@ export const Layout = ({ children }: { children: React.ReactNode }) => {
             }
             saveConfig(newConfig)
             setConfig(newConfig)
+            setIsEnabled(true)
         })
 
     }, [])
-    return (<SidebarProvider>
-        <AppSidebar config={config} />
-        <main>
-            {children}
-        </main>
-    </SidebarProvider>)
+    return (
+        <>
+            {isEnabled && <SidebarProvider>
+                <AppSidebar config={config} />
+                <main>
+                    {children}
+                </main>
+            </SidebarProvider>}
+
+        </>
+
+    )
 }
