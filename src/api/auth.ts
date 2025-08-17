@@ -2,6 +2,7 @@ import { useQuery, useMutation } from '@tanstack/react-query'
 import { request } from '@/utils/request'
 import { writeTextFile, BaseDirectory, exists, create, readTextFile } from '@tauri-apps/plugin-fs';
 import { loadStore } from '@/store/index'
+import { fetch } from '@tauri-apps/plugin-http';
 //添加写入文件的权限
 
 export const useUploadImageApi = () => {
@@ -61,7 +62,7 @@ export const useUploadImageApi = () => {
 }
 export const useLoginApi = async () => {
     const store = (await loadStore())
-    // console.log(await store.get('token'), '=====')
+    console.log('useLoginApi', store)
     const response = await fetch("https://api.chaoyang1024.top/api/auth/login", {
         method: "POST",
         headers: {
@@ -73,6 +74,7 @@ export const useLoginApi = async () => {
             "method": "password"
         }),
     })
+    console.log(response, '==========')
     const token = await response.json().then(res => res.data.access_token)
     await store.set('token', token)
     return token
