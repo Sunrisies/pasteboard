@@ -15,6 +15,7 @@ const loadConfig = async (baseDir: BaseDirectory) => {
 
 export const saveConfig = async (config: any, baseDir: BaseDirectory = BaseDirectory.Home) => {
     const contents = JSON.stringify(config);
+    console.log('Config:', contents, CONFIG_PATH, baseDir);
     await writeTextFile(CONFIG_PATH, contents, { baseDir });
 };
 
@@ -48,7 +49,8 @@ const updateImage = async (image: any, baseDir: BaseDirectory) => {
         const config = await loadConfig(baseDir);
         const newImage = { ...image, id: config.images.length + 1 };
         config.images = [...config.images, newImage];
-        await saveConfig(baseDir, config);
+        console.log('New image:', newImage, config);
+        await saveConfig(config, baseDir);
         console.log('Config updated successfully');
     } catch (error) {
         console.error('Failed to update image:', error);
@@ -63,6 +65,7 @@ export const initConfig = async () => {
     const home = BaseDirectory.Home;
     // 检查当前文件是否存在
     const existsConfig = await exists(CONFIG_PATH, { baseDir: home });
+    console.log('existsConfig', existsConfig);
     if (!existsConfig) await createInitialConfig(home);
 }
 

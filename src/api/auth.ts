@@ -76,6 +76,7 @@ export const useLoginApi = async () => {
     })
     console.log(response, '==========')
     const token = await response.json().then(res => res.data.access_token)
+    console.log(token, 'token')
     await store.set('token', token)
     return token
 }

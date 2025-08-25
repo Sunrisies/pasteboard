@@ -54,6 +54,8 @@
     "store:allow-load",
     "store:default",
     "notification:allow-register-action-types",
-    "notification:default"
+    "notification:default",
+    "clipboard:allow-write-text",
+    "clipboard:write-all"
   ]
 }

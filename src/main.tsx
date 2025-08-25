@@ -21,7 +21,7 @@ import {
 import { listen } from '@tauri-apps/api/event';
 import { uploadImageApi, useLoginApi } from '@/api/auth'
 import { emitter } from '@/utils/mitt'
-import { readImageBinary } from 'tauri-plugin-clipboard-api'
+import { readImageBinary, writeText } from 'tauri-plugin-clipboard-api'
 
 import { configs, initConfig } from './utils/config';
 import { loadStore } from './store';
@@ -66,17 +66,22 @@ listen("add-images", async (event) => {
       const data = await uploadImageApi(ss, token!)
       await configs(data)
       emitter.emit('add-image', data)
+      handleGranted("发布成功")
+      writeText(data.path)
     }
   } catch (e) {
-    let permissionGranted = await isPermissionGranted();
-
-    if (!permissionGranted) {
-      const permission = await requestPermission();
-      permissionGranted = permission === 'granted';
-    }
-
-    if (permissionGranted) {
-      sendNotification({ title: 'pasteboard', body: '当前剪切板里面没有图片', icon: "https://i.pravatar.cc/300" });
-    }
+    handleGranted("当前剪切板里面没有图片")
   }
 })
+const handleGranted = async (body: string) => {
+  let permissionGranted = await isPermissionGranted();
+
+  if (!permissionGranted) {
+    const permission = await requestPermission();
+    permissionGranted = permission === 'granted';
+  }
+
+  if (permissionGranted) {
+    sendNotification({ title: 'pasteboard', body, icon: "https://i.pravatar.cc/300" });
+  }
+}
